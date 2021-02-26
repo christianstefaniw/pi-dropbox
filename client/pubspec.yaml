@@ -1,0 +1,25 @@
+name: client
+description: Client for file uploading to Raspberry pi Zero
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.1
+  image_picker: ^0.6.7+22
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+
+flutter:
+  uses-material-design: true
+
