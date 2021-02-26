@@ -15,7 +15,7 @@ class _HomeState extends State<Home> {
   File image;
   final picker = ImagePicker();
 
-  Future getImage() async {
+  Future<void> getImage() async {
     final pickedFile = await this.picker.getImage(source: ImageSource.gallery);
 
     setState(() {
@@ -25,8 +25,7 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void upload() async{
-    loading();
+  Future<void> upload() async {
 
     Socket sock = await connectToSocket();
     List<int> bytes = this.image.readAsBytesSync();
@@ -34,29 +33,27 @@ class _HomeState extends State<Home> {
     sock.add(bytes);
 
     sock.listen((event) {
-
       setState(() {
         this.image = null;
       });
 
       if (String.fromCharCodes(event) == 'true') {
-        success();
+        this.success();
       } else {
-        error();
+        this.error();
       }
     });
 
     await sock.close();
-    Navigator.pop(context);
   }
 
-  Future<Widget> loading() async {
-    return showDialog(
-      context: context,
+  loading() {
+    showDialog(
       barrierDismissible: false,
+      context: context,
       builder: (BuildContext context) {
-        return new Dialog(
-          child: new CircularProgressIndicator(),
+        return Center(
+          child: CircularProgressIndicator(),
         );
       },
     );
@@ -135,8 +132,10 @@ class _HomeState extends State<Home> {
                 ? Container()
                 : RaisedButton.icon(
                     color: Theme.of(context).colorScheme.secondaryVariant,
-                    onPressed: () {
-                      upload();
+                    onPressed: () async{
+                      this.loading();
+                      await this.upload();
+                      Navigator.pop(context);
                     },
                     icon: Icon(Icons.upload_rounded),
                     label: Text('Upload'),
