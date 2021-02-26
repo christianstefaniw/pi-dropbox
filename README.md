@@ -1,2 +1,2 @@
 # pi-dropbox
-Image uploading to Raspberry pi Zero
+Image uploading to Raspberry Pi Zero
