@@ -37,6 +37,6 @@ class MySocket(object):
 			conn.close()
 
 if __name__ == '__main__':
-	new_socket = MySocket(buf_size=1024, tcp_ip='192.168.1.113', tcp_port=1234)
+	new_socket = MySocket(buf_size=1024, tcp_ip='192.168.1.128', tcp_port=1234)
 	new_socket.create_socket()
 	new_socket.run()
