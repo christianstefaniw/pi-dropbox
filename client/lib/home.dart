@@ -26,23 +26,17 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> upload() async {
-
     Socket sock = await connectToSocket();
     List<int> bytes = this.image.readAsBytesSync();
 
     sock.add(bytes);
 
-    sock.listen((event) {
-      setState(() {
-        this.image = null;
-      });
-
-      if (String.fromCharCodes(event) == 'true') {
-        this.success();
-      } else {
-        this.error();
-      }
+    setState(() {
+      this.image = null;
     });
+    Navigator.pop(context);
+
+    this.success();
 
     await sock.close();
   }
@@ -75,23 +69,6 @@ class _HomeState extends State<Home> {
         );
       },
     );
-  }
-
-  Future<Widget> error() async {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return new Dialog(
-            child: new Container(
-              padding: const EdgeInsets.all(20),
-              width: double.infinity,
-              child: Text(
-                'Error',
-                textAlign: TextAlign.center,
-              ),
-            ),
-          );
-        });
   }
 
   @override
@@ -132,10 +109,9 @@ class _HomeState extends State<Home> {
                 ? Container()
                 : RaisedButton.icon(
                     color: Theme.of(context).colorScheme.secondaryVariant,
-                    onPressed: () async{
+                    onPressed: () async {
                       this.loading();
                       await this.upload();
-                      Navigator.pop(context);
                     },
                     icon: Icon(Icons.upload_rounded),
                     label: Text('Upload'),

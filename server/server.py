@@ -33,7 +33,6 @@ class MySocket(object):
 				file.write(data)
 
 			file.close()
-			conn.send(b'true')
 			conn.close()
 
 if __name__ == '__main__':

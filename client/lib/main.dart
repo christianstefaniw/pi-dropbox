@@ -1,10 +1,14 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
+import 'package:flutter_config/flutter_config.dart';
 
 import './config.dart';
 import './home.dart';
 
-
-void main() => runApp(MyApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig
+  await FlutterConfig.loadEnvVariables();
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -12,11 +16,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-  void initState(){
+  void initState() {
     super.initState();
     currentTheme.addListener(() {
-    setState(() {});
+      setState(() {});
     });
   }
 
