@@ -7,6 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'config.dart';
 
 class Home extends StatefulWidget {
+  final DB db;
+  const Home(this.db);
   @override
   _HomeState createState() => _HomeState();
 }
@@ -26,7 +28,9 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> upload() async {
-    Socket sock = await connectToSocket();
+    String url = await this.widget.db.get('url');
+    int port = await this.widget.db.get('port');
+    Socket sock = await connectToSocket(url, port);
     List<int> bytes = this.image.readAsBytesSync();
 
     sock.add(bytes);
@@ -34,23 +38,60 @@ class _HomeState extends State<Home> {
     setState(() {
       this.image = null;
     });
-    Navigator.pop(context);
 
-    this.success();
+    Navigator.pop(context);
 
     await sock.close();
   }
 
-  loading() {
-    showDialog(
+  Future<Widget> loading() {
+    return showDialog(
       barrierDismissible: false,
       context: context,
-      builder: (BuildContext context) {
-        return Center(
-          child: CircularProgressIndicator(),
+      builder: (_) {
+        return new Center(
+          child: new CircularProgressIndicator(),
         );
       },
     );
+  }
+
+  Future<Widget> newTcpValues(){
+    return showDialog(
+      context: context,
+      builder: (_){
+        TextEditingController urlController = new TextEditingController();
+        TextEditingController portController = new TextEditingController();
+
+        return new SimpleDialog(
+          children: [
+            new TextField(
+              decoration: InputDecoration(
+                hintText: 'URL',
+              ),
+              controller: urlController,
+            ),
+            new TextField(
+              decoration: InputDecoration(
+                hintText: 'Port',
+              ),
+              controller: portController,
+            ),
+            new RaisedButton.icon(
+                onPressed: () => write(urlController.text, portController.text),
+                icon: Icon(Icons.arrow_circle_down),
+                label: Text('Submit'),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
+  void write(String url, String port) async{
+    this.widget.db.write('url', url);
+    this.widget.db.write('port', port);
+    Navigator.pop(context);
   }
 
   Future<Widget> success() async {
@@ -76,6 +117,10 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: new AppBar(
         title: Text("My File Uploader"),
+        leading: IconButton(
+          icon: Icon(Icons.settings),
+          onPressed: this.newTcpValues,
+        ),
         actions: [
           IconButton(
               icon: currentTheme.currentTheme() == ThemeMode.dark
@@ -112,10 +157,23 @@ class _HomeState extends State<Home> {
                     onPressed: () async {
                       this.loading();
                       await this.upload();
+                      this.success();
                     },
                     icon: Icon(Icons.upload_rounded),
                     label: Text('Upload'),
-                  )
+                  ),
+            FutureBuilder<dynamic>(
+              future: this.widget.db.get('url'),
+              builder: (_, AsyncSnapshot<dynamic> snapshot){
+                return snapshot.hasData ? Text(snapshot.data) : Container();
+              },
+            ),
+            FutureBuilder<dynamic>(
+              future: this.widget.db.get('port'),
+              builder: (_, AsyncSnapshot<dynamic> snapshot){
+                return snapshot.hasData ? Text(snapshot.data.toString()) : Container();
+              },
+            ),
           ],
         ),
       ),

@@ -22,7 +22,7 @@ class MySocket(object):
 			conn, addr = self.s.accept()
 
 			timestr = time.strftime("%Y%m%d-%H%M%S")
-			file = open(f'../images/{timestr}.png', 'wb')
+			file = open(f'../pi-dropbox-imgs/{timestr}.png', 'wb')
 			print(f'Connection address: {addr}')
 
 			data = conn.recv(self.buf_size)

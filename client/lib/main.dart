@@ -1,12 +1,11 @@
+import 'package:client/services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_config/flutter_config.dart';
+import 'package:sembast/sembast.dart';
 
 import './config.dart';
 import './home.dart';
 
 void main() async{
-  WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig
-  await FlutterConfig.loadEnvVariables();
   runApp(MyApp());
 }
 
@@ -30,7 +29,16 @@ class _MyAppState extends State<MyApp> {
       darkTheme: ThemeData.dark(),
       themeMode: currentTheme.currentTheme(),
       debugShowCheckedModeBanner: false,
-      home: Home(),
+      home: FutureBuilder<Database>(
+        future: openDb(),
+        builder: (_, AsyncSnapshot<Database> snapshot){
+          if (snapshot.hasData){
+            return Home(DB(snapshot.data));
+          } else {
+            return Container(child: Center(child: CircularProgressIndicator(),), color: Colors.white,);
+          }
+        },
+      )
     );
   }
 }
