@@ -91,6 +91,7 @@ class _HomeState extends State<Home> {
   void write(String url, String port) async{
     this.widget.db.write('url', url);
     this.widget.db.write('port', port);
+    setState((){});
     Navigator.pop(context);
   }
 
